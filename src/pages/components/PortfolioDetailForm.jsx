@@ -22,6 +22,7 @@ function PortfolioDetailForm() {
     const [achievementDetails, setAchievementDetails] = useState([])
     // console.log(achievementDetails)
     // console.log(skills)
+    const [aboutUser, setAbout] = useState("Web developer")
     const [name, setName] = useState()
     const [emailId, setEmailId] = useState()
     const [phone, setPhone] = useState()
@@ -77,8 +78,8 @@ function PortfolioDetailForm() {
     async function addUserData() {
         const userDocRef = doc(db, "users", uid);
         await setDoc(userDocRef, {
-            "Personal Information": {
-                name, phone, emailId, githubLink, linkedin, otherLinks
+            "Personal_Info": {
+                name, phone, emailId, githubLink, linkedin, otherLinks, aboutUser
             },
             "Projects": projectsDetail,
             "Qualifications": qualificationDetail,
@@ -114,6 +115,10 @@ function PortfolioDetailForm() {
                                         <div class="form-group col-4">
                                             <label for="phone">Phone Number</label>
                                             <input type="tel" class="form-control" id="phone" onChange={(e) => { setPhone(e.target.value) }} placeholder="Enter your phone number" />
+                                        </div>
+                                        <div class="form-group col-4">
+                                            <label for="about_yourself">Describe yourself</label>
+                                            <input type="text" class="form-control" id="about_yourself" onChange={(e) => { setAbout(e.target.value) }} placeholder="Describe yourself" />
                                         </div>
                                         <div class="form-group col-4">
                                             <label for="github">Github Url</label>
@@ -206,7 +211,11 @@ function PortfolioDetailForm() {
 
                     <div class="text-center mt-4 mb-4">
                         <button type="button" class="btn btn-primary btn-sm" onClick={() => { addUserData() }}>Generate Portfolio</button>
+                        <button type="button" class="btn btn-primary btn-sm ml-1"><a href="/user" className='text-white text-decoration-none'> Go to Portfolio</a></button>
                     </div>
+                    {/* <div class="text-center mt-4 mb-4">
+                        <button type="button" class="btn btn-primary btn-sm"><a href="/user" className='text-white text-decoration-none'> Go to Portfolio</a></button>
+                    </div> */}
                 </form>
             </div>
         </div>

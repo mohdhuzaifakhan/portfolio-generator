@@ -6,10 +6,11 @@ export default function AddQualification({ setQualificationDetails }) {
     const [collegeName, setCollegeName] = useState("")
     const [degree, setDegree] = useState("")
     const [year, setYear] = useState(2024)
+    const [field, setField] = useState("")
 
     useEffect(() => {
-        setQualificationDetails({ collegeName, degree, year })
-    }, [collegeName, degree, year])
+        setQualificationDetails({ collegeName, degree, year, field })
+    }, [collegeName, degree, year, field])
 
     return (
         // <div className="col-10">
@@ -20,6 +21,10 @@ export default function AddQualification({ setQualificationDetails }) {
                 <div class="form-group col-4">
                     <label for="education-degree">Degree</label>
                     <input type="text" class="form-control" id="education-degree" placeholder="Enter your degree" required onChange={(e) => { setDegree(e.target.value) }} />
+                </div>
+                <div class="form-group col-4">
+                    <label for="education-degree-field">Field of study</label>
+                    <input type="text" class="form-control" id="education-degree-field" placeholder="Field of study" required onChange={(e) => { setField(e.target.value) }} />
                 </div>
                 <div class="form-group col-4">
                     <label for="education-institution">Institution</label>
