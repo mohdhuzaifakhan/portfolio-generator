@@ -1,109 +1,194 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useState } from 'react';
+import SkillsForm from './SkillsForm';
+import AchievementForm from './AchievementForm';
+import { collection, addDoc, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from '../../firebase/initialize';
+import AddQualification from '../formComponents/AddQualification';
+import Expriences from '../formComponents/Expriences';
+import Internships from '../formComponents/Internships'
+import Projects from '../formComponents/Projects'
+import { useNavigate } from 'react-router-dom';
+
 
 function PortfolioDetailForm() {
+    const navigate = useNavigate()
+    const [projectsDetail, setProjectDetails] = useState({})
+    const [exprienceDetail, setExprienceDetails] = useState({})
+    const [qualificationDetail, setQualificationDetails] = useState({})
+    // console.log(exprienceDetail)
+    const [skills, setSkillsDetails] = useState([])
+    const [internshipDetails, setInternshipDetails] = useState({})
+    const [achievementDetails, setAchievementDetails] = useState([])
+    // console.log(achievementDetails)
+    // console.log(skills)
+    const [name, setName] = useState()
+    const [emailId, setEmailId] = useState()
+    const [phone, setPhone] = useState()
+    const [githubLink, setGithhubLink] = useState()
+    const [linkedin, setLinkedInLink] = useState()
+    const [otherLinks, setOtherLinks] = useState()
+    const { email, uid } = JSON.parse(localStorage.getItem("user"));
+    const [sections, setSections] = useState([<AddQualification setQualificationDetails={setQualificationDetails} key={0} />]);
+    const [exprience, setExprience] = useState([<Expriences setExprienceDetails={setExprienceDetails} key={0} />]);
+    const [internship, setIntership] = useState([<Internships setInternshipDetails={setInternshipDetails} key={0} />]);
+    const [project, setProject] = useState([<Projects setProjectDetails={setProjectDetails} key={0} />]);
+    const addSection = () => {
+        const newSections = [...sections, <AddQualification setQualificationDetails={setQualificationDetails} key={sections.length} />];
+        setSections(newSections);
+    };
+    const addProject = () => {
+        const newProjects = [...project, <Projects setProjectDetails={setProjectDetails} key={project.length} />];
+        setProject(newProjects);
+    };
+    const addExprience = () => {
+        const newExprience = [...exprience, <Expriences setExprienceDetails={setExprienceDetails} key={exprience.length} />];
+        setExprience(newExprience);
+    };
+    const addIntership = () => {
+        const newInternship = [...internship, <Internships setInternshipDetails={setInternshipDetails} key={internship.length} />];
+        setIntership(newInternship);
+    };
+    const deleteSection = () => {
+        if (sections.length > 1) {
+            sections.pop()
+            setSections([...sections])
+        }
+    }
+    const deleteExprience = () => {
+        if (exprience.length > 1) {
+            exprience.pop()
+            setExprience([...exprience])
+        }
+    }
+    const deleteIntership = () => {
+        if (internship.length > 1) {
+            internship.pop()
+            setIntership([...internship])
+        }
+    }
+    const deleteProject = () => {
+        if (project.length > 1) {
+            project.pop()
+            setProject([...project])
+        }
+    }
+
+    async function addUserData() {
+        const userDocRef = doc(db, "users", uid);
+        await setDoc(userDocRef, {
+            "Personal Information": {
+                name, phone, emailId, githubLink, linkedin, otherLinks
+            },
+            "Projects": projectsDetail,
+            "Qualifications": qualificationDetail,
+            "Expriences": exprienceDetail,
+            "Internships": internshipDetails,
+            "Skills": skills,
+            "Achievements": achievementDetails
+        })
+        console.log("Data saved succeffully")
+        navigate('/user')
+    }
+
+
     return (
-        <div>
-            <div class="container-fluid">
+        <div className='bg-white'>
+            <div class="container-fluid bg-white">
                 <div className="container mt-4 p-2"><h2 class="text-center mb-4 fs-2">Provide Your Details</h2></div>
                 <form>
                     <div className="container">
-                        <div className="row">
-                            <div className="col">
+                        <div className="row justify-content-center">
+                            <div className="col-10">
                                 <fieldset>
                                     <legend>Personal Information</legend>
-                                    <div class="form-group">
-                                        <label for="full-name">Full Name</label>
-                                        <input type="text" class="form-control" id="full-name" placeholder="Enter your full name" required />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="email">Email address</label>
-                                        <input type="email" class="form-control" id="email" placeholder="Enter your email" required />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="phone">Phone Number</label>
-                                        <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number" />
+                                    <div className="row">
+                                        <div class="form-group col-4">
+                                            <label for="full-name">Full Name</label>
+                                            <input type="text" class="form-control" id="full-name" onChange={(e) => { setName(e.target.value) }} placeholder="Enter your full name" required />
+                                        </div>
+                                        <div class="form-group col-4">
+                                            <label for="email">Email address</label>
+                                            <input type="email" class="form-control" id="email" onChange={(e) => { setEmailId(e.target.value) }} placeholder="Enter your email" required />
+                                        </div>
+                                        <div class="form-group col-4">
+                                            <label for="phone">Phone Number</label>
+                                            <input type="tel" class="form-control" id="phone" onChange={(e) => { setPhone(e.target.value) }} placeholder="Enter your phone number" />
+                                        </div>
+                                        <div class="form-group col-4">
+                                            <label for="github">Github Url</label>
+                                            <input type="tel" class="form-control" id="github" onChange={(e) => { setGithhubLink(e.target.value) }} placeholder="Enter your github url" />
+                                        </div>
+                                        <div class="form-group col-4">
+                                            <label for="linkedin">LinkedIn Url</label>
+                                            <input type="tel" class="form-control" id="linkedin" onChange={(e) => { setLinkedInLink(e.target.value) }} placeholder="Enter your linkedin url" />
+                                        </div>
+                                        <div class="form-group col-4">
+                                            <label for="other scial media link">Other link</label>
+                                            <input type="tel" class="form-control" id="other scial media link" onChange={(e) => { setOtherLinks(e.target.value) }} placeholder="Enter your other link" />
+                                        </div>
                                     </div>
                                 </fieldset>
                             </div>
-                            <div className="col">
+                            {/* <AddQualification /> */}
 
-                                <fieldset>
-                                    <legend>Educational Qualifications</legend>
-                                    <div class="form-group">
-                                        <label for="education-degree">Degree</label>
-                                        <input type="text" class="form-control" id="education-degree" placeholder="Enter your degree" required />
+                            <div className="col-10">
+                                {sections}
+                                <div className="row justify-content-end">
+                                    <div className="col-3 d-flex justify-content-end">
+                                        <button type='button' className='btn mr-1 btn-danger btn-sm' onClick={deleteSection}>Delete</button>
+                                        <button type='button' className='btn btn-primary btn-sm' onClick={addSection}>Add degree</button>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="education-institution">Institution</label>
-                                        <input type="text" class="form-control" id="education-institution" placeholder="Enter your institution" required />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="education-year">Year of Graduation</label>
-                                        <input type="text" class="form-control" id="education-year" placeholder="Enter your year of graduation" />
-                                    </div>
-                                </fieldset>
-
+                                </div>
                             </div>
+                            {/* < button className="btn btn-primary" onClick={addSection}>Add Section</button> */}
                         </div>
                     </div>
 
                     <div className="container">
-                        <div className="row">
-                            <div className="col">
-                                <fieldset class="mt-4">
-                                    <legend>Experiences</legend>
-                                    <div class="form-group">
-                                        <label for="experience-title">Job Title</label>
-                                        <input type="text" class="form-control" id="experience-title" placeholder="Enter your job title" />
+                        <div className="row justify-content-center">
+                            {/* <div className="col-10">
+                                <Expriences />
+                            </div> */}
+                            <div className="col-10">
+                                {exprience}
+                                <div className="row justify-content-end">
+                                    <div className="col-3 d-flex justify-content-end">
+                                        <button type='button' className='btn mr-1 btn-danger btn-sm' onClick={deleteExprience}>Delete</button>
+                                        <button type='button' className='btn btn-primary btn-sm' onClick={addExprience}>Add exprience</button>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="experience-company">Company Name</label>
-                                        <input type="text" class="form-control" id="experience-company" placeholder="Enter your company name" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="experience-description">Job Description</label>
-                                        <textarea class="form-control" id="experience-description" rows="3" placeholder="Enter your job description"></textarea>
-                                    </div>
-                                </fieldset>
-
+                                </div>
                             </div>
-                            <div className="col">
-                                <fieldset class="mt-4">
-                                    <legend>Internships</legend>
-                                    <div class="form-group">
-                                        <label for="internship-title">Internship Title</label>
-                                        <input type="text" class="form-control" id="internship-title" placeholder="Enter your internship title" />
+                            <div className="col-10">
+                                {internship}
+                                <div className="row justify-content-end">
+                                    <div className="col-3 d-flex justify-content-end">
+                                        <button type='button' className='btn mr-1 btn-danger btn-sm' onClick={deleteIntership}>Delete</button>
+                                        <button type='button' className='btn btn-primary btn-sm' onClick={addIntership}>Add intership</button>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="internship-company">Company Name</label>
-                                        <input type="text" class="form-control" id="internship-company" placeholder="Enter your internship company name" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="internship-description">Internship Description</label>
-                                        <textarea class="form-control" id="internship-description" rows="3" placeholder="Enter your internship description"></textarea>
-                                    </div>
-                                </fieldset>
+                                </div>
+
 
                             </div>
                         </div>
                     </div>
                     <div className="container">
-                        <div className="row">
-                            <div className="col">
-                                <fieldset class="mt-4">
-                                    <legend>Projects</legend>
-                                    <div class="form-group">
-                                        <label for="project-title">Project Title</label>
-                                        <input type="text" class="form-control" id="project-title" placeholder="Enter your project title" />
+                        <div className="row justify-content-center">
+                            <div className="col-10">
+                                {/* <Projects /> */}
+                                {project}
+                                <div className="row justify-content-end">
+                                    <div className="col-3 d-flex justify-content-end">
+                                        <button type='button' className='btn mr-1 btn-danger btn-sm' onClick={deleteProject}>Delete</button>
+                                        <button type='button' className='btn btn-primary btn-sm' onClick={addProject}>Add project</button>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="project-description">Project Description</label>
-                                        <textarea class="form-control" id="project-description" rows="3" placeholder="Enter your project description"></textarea>
-                                    </div>
-                                </fieldset>
+                                </div>
                             </div>
-                            <div className="col">
-                                <fieldset class="mt-4">
+                            <div className="col-10">
+                                <SkillsForm setSkillsDetails={setSkillsDetails} />
+                            </div>
+                            <div className="col-10">
+                                {/* <fieldset class="mt-4">
                                     <legend>Achievements</legend>
                                     <div class="form-group">
                                         <label for="achievement-title">Achievement Title</label>
@@ -113,13 +198,14 @@ function PortfolioDetailForm() {
                                         <label for="achievement-description">Achievement Description</label>
                                         <textarea class="form-control" id="achievement-description" rows="3" placeholder="Enter your achievement description"></textarea>
                                     </div>
-                                </fieldset>
+                                </fieldset> */}
+                                <AchievementForm setAchievementDetails={setAchievementDetails} />
                             </div>
                         </div>
                     </div>
 
                     <div class="text-center mt-4 mb-4">
-                        <button type="submit" class="btn btn-primary btn-sm">Generate Portfolio</button>
+                        <button type="button" class="btn btn-primary btn-sm" onClick={() => { addUserData() }}>Generate Portfolio</button>
                     </div>
                 </form>
             </div>
