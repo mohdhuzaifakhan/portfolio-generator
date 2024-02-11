@@ -21,7 +21,7 @@ function Login({ setLogin }) {
                 setEmail("");
                 setPassword("")
                 localStorage.setItem("user", JSON.stringify({ email: user.email, uid: user.uid }))
-                navigate('/user')
+                navigate('/portfolio')
                 // ...
             })
             .catch((error) => {

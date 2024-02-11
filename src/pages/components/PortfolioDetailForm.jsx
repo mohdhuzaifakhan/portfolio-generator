@@ -9,9 +9,11 @@ import Expriences from '../formComponents/Expriences';
 import Internships from '../formComponents/Internships'
 import Projects from '../formComponents/Projects'
 import { useNavigate } from 'react-router-dom';
+import { auth } from '../../firebase/initialize';
 
 
 function PortfolioDetailForm() {
+    const uid = auth.currentUser.uid
     const navigate = useNavigate()
     const [projectsDetail, setProjectDetails] = useState({})
     const [exprienceDetail, setExprienceDetails] = useState({})
@@ -29,7 +31,7 @@ function PortfolioDetailForm() {
     const [githubLink, setGithhubLink] = useState()
     const [linkedin, setLinkedInLink] = useState()
     const [otherLinks, setOtherLinks] = useState()
-    const { email, uid } = JSON.parse(localStorage.getItem("user"));
+    // const { email, uid } = JSON.parse(localStorage.getItem("user"));
     const [sections, setSections] = useState([<AddQualification setQualificationDetails={setQualificationDetails} key={0} />]);
     const [exprience, setExprience] = useState([<Expriences setExprienceDetails={setExprienceDetails} key={0} />]);
     const [internship, setIntership] = useState([<Internships setInternshipDetails={setInternshipDetails} key={0} />]);
@@ -75,6 +77,13 @@ function PortfolioDetailForm() {
         }
     }
 
+    useEffect(() => {
+        if (auth.currentUser) {
+            navigate('/portfolio')
+        } else {
+            navigate('/')
+        }
+    }, [])
     async function addUserData() {
         const userDocRef = doc(db, "users", uid);
         await setDoc(userDocRef, {
@@ -89,7 +98,7 @@ function PortfolioDetailForm() {
             "Achievements": achievementDetails
         })
         console.log("Data saved succeffully")
-        navigate('/user')
+        navigate(`/user/${auth.currentUser.uid}`)
     }
 
 
@@ -211,7 +220,7 @@ function PortfolioDetailForm() {
 
                     <div class="text-center mt-4 mb-4">
                         <button type="button" class="btn btn-primary btn-sm" onClick={() => { addUserData() }}>Generate Portfolio</button>
-                        <button type="button" class="btn btn-primary btn-sm ml-1"><a href="/user" className='text-white text-decoration-none'> Go to Portfolio</a></button>
+                        <button type="button" class="btn btn-primary btn-sm ml-1"><a href={`/user/${uid}`} className='text-white text-decoration-none'> Go to Portfolio</a></button>
                     </div>
                     {/* <div class="text-center mt-4 mb-4">
                         <button type="button" class="btn btn-primary btn-sm"><a href="/user" className='text-white text-decoration-none'> Go to Portfolio</a></button>

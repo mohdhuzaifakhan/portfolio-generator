@@ -8,7 +8,7 @@ function App() {
     <Routes>
       <Route exact path='/' element={<Home />} />
       <Route exact path='/portfolio' element={<PortfolioDetailForm />} />
-      <Route exact path='/user' element={<UserPortfolio />} />
+      <Route exact path='/user/:id' element={<UserPortfolio />} />
     </Routes>
 
   );

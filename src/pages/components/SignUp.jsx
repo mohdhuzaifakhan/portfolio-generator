@@ -23,7 +23,7 @@ function SignUp({ setLogin }) {
                 // setHelperTextForEmail("");
                 // setHelperTextPassword("")
                 localStorage.setItem("user", JSON.stringify({ email: user.user.email, uid: user.user.uid }))
-                navigate('/user')
+                navigate('/portfolio')
             })
             .catch((error) => {
                 const errorCode = error.code;
