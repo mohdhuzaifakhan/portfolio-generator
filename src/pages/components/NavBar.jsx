@@ -18,8 +18,8 @@ function NavBar({ user, id }) {
 
     function updateProfile() {
         navigate('/portfolio')
-
     }
+
     return (
         <div>
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -45,7 +45,8 @@ function NavBar({ user, id }) {
                             <a class="nav-link" href="#achiev">Achievements</a>
                         </li>
                         <li class="nav-item">
-                            {user?.uid === id ? <button class="btn btn-primary btn-sm nav-link text-white shadow-sm" onClick={() => {
+                            {user?.uid === id ? <button class="btn btn-primary btn-sm nav-link text-white shadow-sm"
+                                onClick={() => {
                                 updateProfile()
                             }}>Update Profile</button> : null}
                         </li>

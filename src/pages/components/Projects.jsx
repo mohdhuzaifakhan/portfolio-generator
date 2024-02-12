@@ -5,7 +5,7 @@ const Projects = ({ Projects }) => {
         <div className="row">
             <div className="col-12">
                 <section className="p-1">
-                    <div class="container">
+                    <div class="container-fluid">
                         <div class="card border-0">
                             <div class="card-body">
                                 <h5 class="card-title"><b>Project Title</b> : {Projects?.projectTitle}</h5>

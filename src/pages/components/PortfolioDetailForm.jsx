@@ -13,7 +13,9 @@ import { auth } from '../../firebase/initialize';
 
 
 function PortfolioDetailForm() {
-    const uid = auth.currentUser.uid
+    // const uid = auth.currentUser.uid
+    const [data, setUserData] = useState()
+    const [uid, setUid] = useState()
     const navigate = useNavigate()
     const [projectsDetail, setProjectDetails] = useState({})
     const [exprienceDetail, setExprienceDetails] = useState({})
@@ -31,6 +33,10 @@ function PortfolioDetailForm() {
     const [githubLink, setGithhubLink] = useState()
     const [linkedin, setLinkedInLink] = useState()
     const [otherLinks, setOtherLinks] = useState()
+    const [listSection, setListSection] = useState([])
+    const [projectList, setProjectList] = useState([])
+    const [exprienceList, setExprienceList] = useState([])
+    const [internshipList, setInternshipList] = useState([])
     // const { email, uid } = JSON.parse(localStorage.getItem("user"));
     const [sections, setSections] = useState([<AddQualification setQualificationDetails={setQualificationDetails} key={0} />]);
     const [exprience, setExprience] = useState([<Expriences setExprienceDetails={setExprienceDetails} key={0} />]);
@@ -39,61 +45,93 @@ function PortfolioDetailForm() {
     const addSection = () => {
         const newSections = [...sections, <AddQualification setQualificationDetails={setQualificationDetails} key={sections.length} />];
         setSections(newSections);
+        setListSection([...listSection, qualificationDetail])
+        console.log([...listSection, qualificationDetail])
     };
     const addProject = () => {
         const newProjects = [...project, <Projects setProjectDetails={setProjectDetails} key={project.length} />];
         setProject(newProjects);
+        setProjectList([...projectList, projectsDetail])
     };
     const addExprience = () => {
         const newExprience = [...exprience, <Expriences setExprienceDetails={setExprienceDetails} key={exprience.length} />];
         setExprience(newExprience);
+        setExprienceList([...exprienceList, exprienceDetail])
     };
     const addIntership = () => {
         const newInternship = [...internship, <Internships setInternshipDetails={setInternshipDetails} key={internship.length} />];
         setIntership(newInternship);
+        setInternshipList([...internshipList, internshipDetails])
     };
     const deleteSection = () => {
         if (sections.length > 1) {
             sections.pop()
+            listSection.pop()
             setSections([...sections])
+            setListSection([...listSection])
         }
     }
     const deleteExprience = () => {
         if (exprience.length > 1) {
             exprience.pop()
+            exprienceList.pop()
             setExprience([...exprience])
+            setExprienceList([...exprienceList])
         }
     }
     const deleteIntership = () => {
         if (internship.length > 1) {
             internship.pop()
+            internshipList.pop()
             setIntership([...internship])
+            setInternshipList([...internshipList])
         }
     }
     const deleteProject = () => {
         if (project.length > 1) {
             project.pop()
+            projectList.pop()
             setProject([...project])
+            setProjectList([...projectList])
         }
     }
 
+
+    async function dataAvailability(uid) {
+        const userDocRef = doc(db, "users", uid);
+        const userRef = await getDoc(userDocRef)
+        if (userRef.exists()) {
+            const data = userRef.data();
+            // console.log(data)
+            // console.log(Expriences, Internships, Projects, Skills, Qualifications, Personal_Information, Achievements)
+            setUserData(data)
+        }
+    }
+
+
     useEffect(() => {
         if (auth.currentUser) {
+            setUid(auth.currentUser.uid)
             navigate('/portfolio')
         } else {
             navigate('/')
         }
     }, [])
+
+    useEffect(() => {
+        dataAvailability(auth.currentUser.uid);
+    }, [])
+
     async function addUserData() {
         const userDocRef = doc(db, "users", uid);
         await setDoc(userDocRef, {
             "Personal_Info": {
                 name, phone, emailId, githubLink, linkedin, otherLinks, aboutUser
             },
-            "Projects": projectsDetail,
-            "Qualifications": qualificationDetail,
-            "Expriences": exprienceDetail,
-            "Internships": internshipDetails,
+            "Projects": projectList,
+            "Qualifications": listSection,
+            "Expriences": exprienceList,
+            "Internships": internshipList,
             "Skills": skills,
             "Achievements": achievementDetails
         })
@@ -115,31 +153,31 @@ function PortfolioDetailForm() {
                                     <div className="row">
                                         <div class="form-group col-4">
                                             <label for="full-name">Full Name</label>
-                                            <input type="text" class="form-control" id="full-name" onChange={(e) => { setName(e.target.value) }} placeholder="Enter your full name" required />
+                                            <input type="text" value={data?.Personal_Info?.name} class="form-control" id="full-name" onChange={(e) => { setName(e.target.value) }} placeholder="Enter your full name" required />
                                         </div>
                                         <div class="form-group col-4">
                                             <label for="email">Email address</label>
-                                            <input type="email" class="form-control" id="email" onChange={(e) => { setEmailId(e.target.value) }} placeholder="Enter your email" required />
+                                            <input type="email" value={data?.Personal_Info?.email} class="form-control" id="email" onChange={(e) => { setEmailId(e.target.value) }} placeholder="Enter your email" required />
                                         </div>
                                         <div class="form-group col-4">
                                             <label for="phone">Phone Number</label>
-                                            <input type="tel" class="form-control" id="phone" onChange={(e) => { setPhone(e.target.value) }} placeholder="Enter your phone number" />
+                                            <input type="tel" value={data?.Personal_Info?.phone} class="form-control" id="phone" onChange={(e) => { setPhone(e.target.value) }} placeholder="Enter your phone number" />
                                         </div>
                                         <div class="form-group col-4">
                                             <label for="about_yourself">Describe yourself</label>
-                                            <input type="text" class="form-control" id="about_yourself" onChange={(e) => { setAbout(e.target.value) }} placeholder="Describe yourself" />
+                                            <input type="text" value={data?.Personal_Info?.aboutUser} class="form-control" id="about_yourself" onChange={(e) => { setAbout(e.target.value) }} placeholder="Describe yourself" />
                                         </div>
                                         <div class="form-group col-4">
                                             <label for="github">Github Url</label>
-                                            <input type="tel" class="form-control" id="github" onChange={(e) => { setGithhubLink(e.target.value) }} placeholder="Enter your github url" />
+                                            <input type="tel" value={data?.Personal_Info?.githubLink} class="form-control" id="github" onChange={(e) => { setGithhubLink(e.target.value) }} placeholder="Enter your github url" />
                                         </div>
                                         <div class="form-group col-4">
                                             <label for="linkedin">LinkedIn Url</label>
-                                            <input type="tel" class="form-control" id="linkedin" onChange={(e) => { setLinkedInLink(e.target.value) }} placeholder="Enter your linkedin url" />
+                                            <input type="tel" value={data?.Personal_Info?.linkedin} class="form-control" id="linkedin" onChange={(e) => { setLinkedInLink(e.target.value) }} placeholder="Enter your linkedin url" />
                                         </div>
                                         <div class="form-group col-4">
                                             <label for="other scial media link">Other link</label>
-                                            <input type="tel" class="form-control" id="other scial media link" onChange={(e) => { setOtherLinks(e.target.value) }} placeholder="Enter your other link" />
+                                            <input type="tel" value={data?.Personal_Info?.otherLinks} class="form-control" id="other scial media link" onChange={(e) => { setOtherLinks(e.target.value) }} placeholder="Enter your other link" />
                                         </div>
                                     </div>
                                 </fieldset>
